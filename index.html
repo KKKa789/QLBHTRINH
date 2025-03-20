@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Bán Hàng</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Quản Lý Bán Hàng <button id="viewHistory">Xem lịch sử hóa đơn</button></h1>
+
+    <div class="input-section">
+        <input type="text" id="newCustomerName" placeholder="Nhập tên khách hàng mới">
+        <button id="addCustomer">Thêm khách hàng</button>
+    </div>
+
+    <div class="input-section">
+        <input type="text" id="productName" placeholder="Tên sản phẩm">
+        <input type="text" id="unit" placeholder="ĐVT">
+        <input type="text" id="price" placeholder="Giá">
+        <button id="addProduct">Thêm sản phẩm</button>
+    </div>
+
+    <h2>Danh sách sản phẩm</h2>
+    <div class="input-section">
+        <select id="customerSelect">
+            <option value="">Chọn...</option>
+        </select>
+        <input type="text" id="searchProduct" placeholder="Tìm kiếm sản phẩm...">
+        <button id="deleteCustomer" style="background-color: #ff4444;">Xóa khách hàng</button>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Chọn</th>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>ĐVT</th>
+                <th>Giá</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="productList"></tbody>
+    </table>
+
+    <button id="generateInvoice">Tạo hóa đơn</button>
+
+    <h2>Hóa đơn</h2>
+    <p id="displayCustomer">Khách hàng: Chưa chọn</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>ĐVT</th>
+                <th>Giá</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="invoiceList"></tbody>
+    </table>
+    <p id="totalAmount"></p>
+    <button id="confirmInvoice">Xác nhận hóa đơn</button>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <h2>Lịch sử hóa đơn</h2>
+            <div id="historyContent"></div>
+            <button id="closeHistory">Đóng</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
