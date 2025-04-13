@@ -24,39 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let invoiceItems = [];
     let invoiceHistory = JSON.parse(localStorage.getItem("invoiceHistory")) || [];
 
-    // Hàm chuẩn hóa chuỗi tiếng Việt để sắp xếp
-    function normalizeVietnamese(str) {
-        const vietnameseMap = {
-            'à': 'a', 'á': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a',
-            'ă': 'a', 'ằ': 'a', 'ắ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a',
-            'â': 'a', 'ầ': 'a', 'ấ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ậ': 'a',
-            'è': 'e', 'é': 'e', 'ẻ': 'e', 'ẽ': 'e', 'ẹ': 'e',
-            'ê': 'e', 'ề': 'e', 'ế': 'e', 'ể': 'e', 'ễ': 'e', 'ệ': 'e',
-            'ì': 'i', 'í': 'i', 'ỉ': 'i', 'ĩ': 'i', 'ị': 'i',
-            'ò': 'o', 'ó': 'o', 'ỏ': 'o', 'õ': 'o', 'ọ': 'o',
-            'ô': 'o', 'ồ': 'o', 'ố': 'o', 'ổ': 'o', 'ỗ': 'o', 'ộ': 'o',
-            'ơ': 'o', 'ờ': 'o', 'ớ': 'o', 'ở': 'o', 'ỡ': 'o', 'ợ': 'o',
-            'ù': 'u', 'ú': 'u', 'ủ': 'u', 'ũ': 'u', 'ụ': 'u',
-            'ư': 'u', 'ừ': 'u', 'ứ': 'u', 'ử': 'u', 'ữ': 'u', 'ự': 'u',
-            'ỳ': 'y', 'ý': 'y', 'ỷ': 'y', 'ỹ': 'y', 'ỵ': 'y',
-            'đ': 'd',
-            'À': 'A', 'Á': 'A', 'Ả': 'A', 'Ã': 'A', 'Ạ': 'A',
-            'Ă': 'A', 'Ằ': 'A', 'Ắ': 'A', 'Ẳ': 'A', 'Ẵ': 'A', 'Ặ': 'A',
-            'Â': 'A', 'Ầ': 'A', 'Ấ': 'A', 'Ẩ': 'A', 'Ẫ': 'A', 'Ậ': 'A',
-            'È': 'E', 'É': 'E', 'Ẻ': 'E', 'Ẽ': 'E', 'Ẹ': 'E',
-            'Ê': 'E', 'Ề': 'E', 'Ế': 'E', 'Ể': 'E', 'Ễ': 'E', 'Ệ': 'E',
-            'Ì': 'I', 'Í': 'I', 'Ỉ': 'I', 'Ĩ': 'I', 'Ị': 'I',
-            'Ò': 'O', 'Ó': 'O', 'Ỏ': 'O', 'Õ': 'O', 'Ọ': 'O',
-            'Ô': 'O', 'Ồ': 'O', 'Ố': 'O', 'Ổ': 'O', 'Ỗ': 'O', 'Ộ': 'O',
-            'Ơ': 'O', 'Ờ': 'O', 'Ớ': 'O', 'Ở': 'O', 'Ỡ': 'O', 'Ợ': 'O',
-            'Ù': 'U', 'Ú': 'U', 'Ủ': 'U', 'Ũ': 'U', 'Ụ': 'U',
-            'Ư': 'U', 'Ừ': 'U', 'Ứ': 'U', 'Ử': 'U', 'Ữ': 'U', 'Ự': 'U',
-            'Ỳ': 'Y', 'Ý': 'Y', 'Ỷ': 'Y', 'Ỹ': 'Y', 'Ỵ': 'Y',
-            'Đ': 'D'
-        };
-        return str.replace(/[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ]/g, char => vietnameseMap[char] || char).toLowerCase();
-    }
-
     // Cập nhật dropdown khách hàng
     function updateCustomerDropdown() {
         customerSelect.innerHTML = '<option value="">Chọn...</option>';
@@ -156,22 +123,15 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderProductList(customer) {
         productList.innerHTML = "";
         if (!customer || !customerProducts[customer]) return;
-
-        // Sắp xếp sản phẩm theo tên tiếng Việt
-        const sortedProducts = customerProducts[customer].slice().sort((a, b) => {
-            return normalizeVietnamese(a.name).localeCompare(normalizeVietnamese(b.name), 'vi');
-        });
-
-        sortedProducts.forEach((product, index) => {
-            const originalIndex = customerProducts[customer].findIndex(p => p.name === product.name && p.unit === product.unit && p.price === product.price);
+        customerProducts[customer].forEach((product, index) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td><input type="checkbox" class="select-product" data-index="${originalIndex}"></td>
+                <td><input type="checkbox" class="select-product" data-index="${index}"></td>
                 <td>${product.name}</td>
-                <td><input type="number" min="1" value="${product.quantity}" class="quantity" data-index="${originalIndex}"></td>
+                <td><input type="number" min="1" value="${product.quantity}" class="quantity" data-index="${index}"></td>
                 <td>${product.unit}</td>
                 <td>${formatPrice(product.price.toString())}</td>
-                <td><button class="delete-btn" data-index="${originalIndex}">Xóa</button></td>`;
+                <td><button class="delete-btn" data-index="${index}">Xóa</button></td>`;
             productList.appendChild(row);
         });
 
@@ -258,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${item.name}</td>
                 <td>
                     <button class="decrease-qty" data-index="${index}">-</button>
-                    <input type="text" value="${item.quantity}" class="quantity-input" data-index="${index}" style="width: 60px; text-align: center;">
+                    <input type="number" min="1" value="${item.quantity}" class="quantity-input" data-index="${index}" style="width: 50px; text-align: center;">
                     <button class="increase-qty" data-index="${index}">+</button>
                 </td>
                 <td>${item.unit}</td>
@@ -272,9 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".increase-qty").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const index = parseInt(e.target.dataset.index);
-                let currentQuantity = parseFloat(invoiceItems[index].quantity);
-                if (isNaN(currentQuantity)) currentQuantity = 1;
-                invoiceItems[index].quantity = (currentQuantity + 1).toFixed(2);
+                invoiceItems[index].quantity++;
                 invoiceItems[index].total = invoiceItems[index].quantity * invoiceItems[index].price;
                 renderInvoice();
             });
@@ -283,10 +241,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".decrease-qty").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const index = parseInt(e.target.dataset.index);
-                let currentQuantity = parseFloat(invoiceItems[index].quantity);
-                if (isNaN(currentQuantity)) currentQuantity = 1;
-                if (currentQuantity > 0.01) {
-                    invoiceItems[index].quantity = (currentQuantity - 1).toFixed(2);
+                if (invoiceItems[index].quantity > 1) {
+                    invoiceItems[index].quantity--;
                     invoiceItems[index].total = invoiceItems[index].quantity * invoiceItems[index].price;
                     renderInvoice();
                 }
@@ -295,42 +251,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Event listener for manual quantity input
         document.querySelectorAll(".quantity-input").forEach(input => {
+            // Update quantity as the user types, but allow the field to be empty temporarily
             input.addEventListener("input", (e) => {
                 const index = parseInt(e.target.dataset.index);
-                let value = e.target.value.trim();
-                
-                if (value === "") return;
+                const value = e.target.value;
+                // Allow the field to be empty while typing
+                if (value === "") return; // Do nothing while the field is empty
 
-                value = value.replace(",", ".");
-
-                let newQuantity = parseFloat(value);
-
-                if (isNaN(newQuantity) || newQuantity < 0) {
-                    newQuantity = 1;
+                let newQuantity = parseInt(value);
+                if (isNaN(newQuantity)) {
+                    newQuantity = 1; // Default to 1 if the input is invalid
                     e.target.value = newQuantity;
-                } else {
-                    invoiceItems[index].quantity = newQuantity.toString();
                 }
-
-                invoiceItems[index].total = newQuantity * invoiceItems[index].price;
+                invoiceItems[index].quantity = newQuantity;
+                invoiceItems[index].total = invoiceItems[index].quantity * invoiceItems[index].price;
                 renderInvoice();
             });
 
+            // Enforce minimum value of 1 when the user finishes editing (on blur)
             input.addEventListener("blur", (e) => {
                 const index = parseInt(e.target.dataset.index);
-                let value = e.target.value.trim().replace(",", ".");
-                let newQuantity = parseFloat(value);
-                
-                if (isNaN(newQuantity) || newQuantity < 0) {
-                    newQuantity = 1;
+                let newQuantity = parseInt(e.target.value);
+                if (isNaN(newQuantity) || newQuantity < 1) {
+                    newQuantity = 1; // Default to 1 if the input is empty or invalid
                     e.target.value = newQuantity;
-                    invoiceItems[index].quantity = newQuantity.toString();
-                } else {
-                    e.target.value = newQuantity.toString().replace(".", ",");
-                    invoiceItems[index].quantity = newQuantity.toString();
                 }
-
-                invoiceItems[index].total = newQuantity * invoiceItems[index].price;
+                invoiceItems[index].quantity = newQuantity;
+                invoiceItems[index].total = invoiceItems[index].quantity * invoiceItems[index].price;
                 renderInvoice();
             });
         });
@@ -361,12 +308,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const invoiceData = {
             customerName: customer,
             date: formattedDate,
-            items: invoiceItems.map(item => ({
-                ...item,
-                quantity: parseFloat(item.quantity),
-                total: parseFloat(item.quantity) * item.price
-            })),
-            total: invoiceItems.reduce((sum, item) => sum + parseFloat(item.quantity) * item.price, 0)
+            items: [...invoiceItems],
+            total: invoiceItems.reduce((sum, item) => sum + item.total, 0)
         };
         invoiceHistory.push(invoiceData);
         localStorage.setItem("invoiceHistory", JSON.stringify(invoiceHistory));
@@ -381,14 +324,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 th, td { border: 1px solid #ccc; padding: 8px; text-align: left; } 
                 th { background-color: #f4f4f4; } 
                 .total-row { font-weight: bold; background-color: #f4f4f4; } 
-                th:nth-child(2), td:nth-child(2) { width: 80px; text-align: center; }
-                th:nth-child(3), td:nth-child(3) { width: 50px; text-align: center; }
+                th:nth-child(2), td:nth-child(2) { width: 80px; text-align: center; } /* Số lượng column */
+                th:nth-child(3), td:nth-child(3) { width: 50px; text-align: center; } /* ĐVT column */
                 @media print { .print-button { display: none; } }
             </style></head>
             <body><div class="invoice-header"><h2>HÓA ĐƠN</h2><p>Ngày: ${formattedDate}</p></div>
             <h3>Khách hàng: ${customer}</h3><table><thead><tr><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead><tbody>
-            ${invoiceItems.map(item => `<tr><td>${item.name}</td><td>${parseFloat(item.quantity).toString().replace(".", ",")}</td><td>${item.unit}</td><td>${formatPrice(item.price.toString())}</td><td>${formatPrice((parseFloat(item.quantity) * item.price).toFixed(0))}</td></tr>`).join("")}
-            <tr class="total-row"><td colspan="4">Tổng cộng</td><td>${formatPrice(invoiceData.total.toFixed(0))}</td></tr></tbody></table><div class="print-button" style="display:none;"><button onclick="window.print()" style="display:none;">In hóa đơn</button></div></body></html>`);
+            ${invoiceItems.map(item => `<tr><td>${item.name}</td><td>${item.quantity}</td><td>${item.unit}</td><td>${formatPrice(item.price.toString())}</td><td>${formatPrice(item.total.toString())}</td></tr>`).join("")}
+            <tr class="total-row"><td colspan="4">Tổng cộng</td><td>${formatPrice(invoiceData.total.toString())}</td></tr></tbody></table><div class="print-button" style="display:none;"><button onclick="window.print()" style="display:none;">In hóa đơn</button></div></body></html>`);
         invoiceWindow.document.close();
 
         invoiceItems = [];
@@ -417,15 +360,15 @@ document.addEventListener("DOMContentLoaded", function () {
                             ${invoice.items.map(item => `
                                 <tr>
                                     <td>${item.name}</td>
-                                    <td>${item.quantity.toString().replace(".", ",")}</td>
+                                    <td>${item.quantity}</td>
                                     <td>${item.unit}</td>
                                     <td>${formatPrice(item.price.toString())} VNĐ</td>
-                                    <td>${formatPrice(item.total.toFixed(0))} VNĐ</td>
+                                    <td>${formatPrice(item.total.toString())} VNĐ</td>
                                 </tr>
                             `).join("")}
                             <tr style="font-weight: bold; background-color: #f4f4f4;">
                                 <td colspan="4">Tổng cộng</td>
-                                <td>${formatPrice(invoice.total.toFixed(0))} VNĐ</td>
+                                <td>${formatPrice(invoice.total.toString())} VNĐ</td>
                             </tr>
                         </tbody>
                     </table>
@@ -436,6 +379,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return invoiceContent;
         }).join("");
 
+        // Event listener for print button
         document.querySelectorAll(".print-invoice").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const index = parseInt(e.target.dataset.index);
@@ -450,8 +394,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; } 
                         th { background-color: #f4f4f4; } 
                         .total-row { font-weight: bold; background-color: #f4f4f4; } 
-                        th:nth-child(2), td:nth-child(2) { width: 80px; text-align: center; }
-                        th:nth-child(3), td:nth-child(3) { width: 50px; text-align: center; }
+                        th:nth-child(2), td:nth-child(2) { width: 80px; text-align: center; } /* Số lượng column */
+                        th:nth-child(3), td:nth-child(3) { width: 50px; text-align: center; } /* ĐVT column */
                         @media print { .print-button { display: none; } }
                     </style></head>
                     <body><div class="invoice-header"><h2>HÓA ĐƠN #${index + 1}</h2><p>Ngày: ${invoice.date}</p></div>
@@ -459,18 +403,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     ${invoice.items.map(item => `
                         <tr>
                             <td>${item.name}</td>
-                            <td>${item.quantity.toString().replace(".", ",")}</td>
+                            <td>${item.quantity}</td>
                             <td>${item.unit}</td>
                             <td>${formatPrice(item.price.toString())}</td>
-                            <td>${formatPrice(item.total.toFixed(0))}</td>
+                            <td>${formatPrice(item.total.toString())}</td>
                         </tr>
                     `).join("")}
-                    <tr class="total-row"><td colspan="4">Tổng cộng</td><td>${formatPrice(invoice.total.toFixed(0))}</td></tr></tbody></table></body></html>`);
+                    <tr class="total-row"><td colspan="4">Tổng cộng</td><td>${formatPrice(invoice.total.toString())}</td></tr></tbody></table></body></html>`);
                 printWindow.document.close();
                 printWindow.print();
             });
         });
 
+        // Event listener for delete button
         document.querySelectorAll(".delete-invoice").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 if (confirm(`Bạn có chắc muốn xóa hóa đơn #${parseInt(e.target.dataset.index) + 1} không?`)) {
