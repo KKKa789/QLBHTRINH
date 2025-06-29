@@ -89,8 +89,27 @@ th {
     background-color: #f4f4f4;
 }
 
+td:first-child {
+    text-align: center;
+}
+
 td:first-child + td {
     text-align: left;
+}
+
+#invoiceHeader {
+    margin-bottom: 20px;
+}
+
+#invoiceHeader h3 {
+    font-size: 1.5em;
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+#invoiceHeader p {
+    margin: 5px 0;
+    color: #333;
 }
 
 #totalAmount {
@@ -98,12 +117,6 @@ td:first-child + td {
     font-size: 1.2em;
     color: #ff0000;
     font-weight: bold;
-}
-
-#displayCustomer {
-    margin: 10px 0;
-    font-size: 1.1em;
-    color: #333;
 }
 
 .modal {
@@ -139,5 +152,18 @@ td:first-child + td {
 }
 
 #deleteCustomer:hover {
+    background-color: #cc0000;
+}
+
+.delete-invoice-btn {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.delete-invoice-btn:hover {
     background-color: #cc0000;
 }
