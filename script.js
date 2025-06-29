@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const historyContent = document.getElementById("historyContent");
     const closeHistoryBtn = document.getElementById("closeHistory");
     const deleteCustomerBtn = document.getElementById("deleteCustomer");
+    const invoiceDate = document.getElementById("invoiceDate");
 
     let customers = JSON.parse(localStorage.getItem("customers")) || [];
     let customerProducts = JSON.parse(localStorage.getItem("customerProducts")) || {};
@@ -91,13 +92,13 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         
-        if (confirm(`Bạn có chắc muốn xóa khách hàng "${selectedCustomer}" và tất cả sản phẩm của họ không?`)) {
+        if (confirm(`Bạn có chắc muốn xóa khách hàng "${選項Customer}" và tất cả sản phẩm của họ không?`)) {
             customers = customers.filter(customer => customer !== selectedCustomer);
             delete customerProducts[selectedCustomer];
             localStorage.setItem("customers", JSON.stringify(customers));
             localStorage.setItem("customerProducts", JSON.stringify(customerProducts));
             customerSelect.value = "";
-            displayCustomer.textContent = "Khách hàng: Chưa chọn";
+            displayCustomer.textContent = "Chưa chọn";
             productList.innerHTML = "";
             invoiceItems = [];
             renderInvoice();
@@ -168,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
             row.innerHTML = `
                 <td><input type="checkbox" class="select-product" data-index="${originalIndex}"></td>
                 <td>${product.name}</td>
-                <td><input type="number" min="1" value="${product.quantity}" class="quantity" data-index="${originalIndex}"></td>
+                <td><input type="text" class="quantity" data-index="${originalIndex}" value="${product.quantity.toString().replace('.', ',')}" style="width: 60px;"></td>
                 <td>${product.unit}</td>
                 <td>${formatPrice(product.price.toString())}</td>
                 <td><button class="delete-btn" data-index="${originalIndex}">Xóa</button></td>`;
@@ -177,10 +178,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.querySelectorAll(".quantity").forEach(input => {
             input.addEventListener("input", (e) => {
+                let value = e.target.value.replace(',', '.'); // Chuyển dấu phẩy thành dấu chấm để xử lý
+                value = value.replace(/[^0-9.]/g, ''); // Chỉ cho phép số và dấu chấm
+                if (value.includes('.')) {
+                    const parts = value.split('.');
+                    if (parts.length > 2) {
+                        value = parts[0] + '.' + parts[1]; // Giới hạn chỉ 1 dấu chấm
+                    }
+                }
+                e.target.value = value.replace('.', ','); // Hiển thị lại với dấu phẩy
+                const quantity = parseFloat(value.replace(',', '.')) || 0;
                 const index = e.target.dataset.index;
-                let newQuantity = parseInt(e.target.value);
-                if (newQuantity < 1 || isNaN(newQuantity)) newQuantity = 1;
-                customerProducts[customer][index].quantity = newQuantity;
+                if (quantity <= 0) {
+                    alert("Số lượng phải lớn hơn 0!");
+                    e.target.value = customerProducts[customer][index].quantity.toString().replace('.', ',');
+                    return;
+                }
+                customerProducts[customer][index].quantity = quantity;
                 localStorage.setItem("customerProducts", JSON.stringify(customerProducts));
             });
         });
@@ -202,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectedCustomer = e.target.value;
         renderProductList(selectedCustomer);
         searchProduct.value = "";
-        displayCustomer.textContent = selectedCustomer ? `Khách hàng: ${selectedCustomer}` : "Khách hàng: Chưa chọn";
+        displayCustomer.textContent = selectedCustomer ? selectedCustomer : "Chưa chọn";
         invoiceItems = [];
         renderInvoice();
     });
@@ -227,23 +241,26 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         invoiceItems = [];
         const selectedCheckboxes = document.querySelectorAll(".select-product:checked");
+        if (selectedCheckboxes.length === 0) {
+            alert("Vui lòng chọn ít nhất một sản phẩm để tạo hóa đơn.");
+            return;
+        }
         selectedCheckboxes.forEach(checkbox => {
             const index = checkbox.dataset.index;
             const quantityInput = checkbox.closest("tr").querySelector(".quantity");
-            const quantity = parseInt(quantityInput.value);
-            if (quantity <= 0 || isNaN(quantity)) {
-                alert("Số lượng không hợp lệ.");
+            const quantity = parseFloat(quantityInput.value.replace(',', '.'));
+            if (isNaN(quantity) || quantity <= 0) {
+                alert(`Số lượng không hợp lệ cho sản phẩm "${customerProducts[customer][index].name}".`);
                 return;
             }
             const product = customerProducts[customer][index];
             invoiceItems.push({ ...product, quantity, total: product.price * quantity });
         });
 
-        if (invoiceItems.length === 0) {
-            alert("Vui lòng chọn ít nhất một sản phẩm để tạo hóa đơn.");
-            return;
-        }
-        displayCustomer.textContent = `Khách hàng: ${customer}`;
+        if (invoiceItems.length === 0) return; // Không tạo hóa đơn nếu có lỗi số lượng
+        displayCustomer.textContent = customer;
+        const currentDate = new Date();
+        invoiceDate.textContent = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
         renderInvoice();
     });
 
@@ -255,98 +272,57 @@ document.addEventListener("DOMContentLoaded", function () {
             total += item.total;
             const row = document.createElement("tr");
             row.innerHTML = `
+                <td>${index + 1}</td>
                 <td>${item.name}</td>
-                <td>
-                    <button class="decrease-qty" data-index="${index}">-</button>
-                    <input type="text" value="${item.quantity}" class="quantity-input" data-index="${index}" style="width: 60px; text-align: center;">
-                    <button class="increase-qty" data-index="${index}">+</button>
-                </td>
+                <td><input type="text" class="invoice-quantity" data-index="${index}" value="${item.quantity.toString().replace('.', ',')}" style="width: 60px;"></td>
                 <td>${item.unit}</td>
                 <td>${formatPrice(item.price.toString())}</td>
-                <td><button class="remove-invoice-item" data-index="${index}">Xóa</button></td>`;
+                <td>${formatPrice(item.total.toFixed(0))}</td>
+                <td><button class="delete-invoice-btn" data-index="${index}">Xóa</button></td>`;
             invoiceList.appendChild(row);
         });
-        totalAmountEl.innerHTML = `<b>Tổng cộng: ${formatPrice(total.toString())}</b>`;
+        totalAmountEl.textContent = formatPrice(total.toFixed(0));
 
-        // Event listeners for increase/decrease buttons
-        document.querySelectorAll(".increase-qty").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const index = parseInt(e.target.dataset.index);
-                let currentQuantity = parseFloat(invoiceItems[index].quantity);
-                if (isNaN(currentQuantity)) currentQuantity = 1;
-                invoiceItems[index].quantity = (currentQuantity + 1).toFixed(2);
-                invoiceItems[index].total = invoiceItems[index].quantity * invoiceItems[index].price;
+        // Xử lý thay đổi số lượng
+        document.querySelectorAll(".invoice-quantity").forEach(input => {
+            input.addEventListener("input", (e) => {
+                let value = e.target.value.replace(',', '.'); // Chuyển dấu phẩy thành dấu chấm để xử lý
+                value = value.replace(/[^0-9.]/g, ''); // Chỉ cho phép số và dấu chấm
+                if (value.includes('.')) {
+                    const parts = value.split('.');
+                    if (parts.length > 2) {
+                        value = parts[0] + '.' + parts[1]; // Giới hạn chỉ 1 dấu chấm
+                    }
+                }
+                e.target.value = value.replace('.', ','); // Hiển thị lại với dấu phẩy
+                const quantity = parseFloat(value.replace(',', '.')) || 0;
+                const index = e.target.dataset.index;
+                if (quantity <= 0) {
+                    alert("Số lượng phải lớn hơn 0!");
+                    e.target.value = invoiceItems[index].quantity.toString().replace('.', ',');
+                    return;
+                }
+                invoiceItems[index].quantity = quantity;
+                invoiceItems[index].total = invoiceItems[index].price * quantity;
                 renderInvoice();
             });
         });
 
-        document.querySelectorAll(".decrease-qty").forEach(btn => {
+        // Xử lý xóa sản phẩm khỏi hóa đơn
+        document.querySelectorAll(".delete-invoice-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
-                const index = parseInt(e.target.dataset.index);
-                let currentQuantity = parseFloat(invoiceItems[index].quantity);
-                if (isNaN(currentQuantity)) currentQuantity = 1;
-                if (currentQuantity > 0.01) {
-                    invoiceItems[index].quantity = (currentQuantity - 1).toFixed(2);
-                    invoiceItems[index].total = invoiceItems[index].quantity * invoiceItems[index].price;
+                const index = e.target.dataset.index;
+                if (confirm(`Bạn có muốn xóa sản phẩm "${invoiceItems[index].name}" khỏi hóa đơn không?`)) {
+                    invoiceItems.splice(index, 1);
                     renderInvoice();
                 }
-            });
-        });
-
-        // Event listener for manual quantity input
-        document.querySelectorAll(".quantity-input").forEach(input => {
-            input.addEventListener("input", (e) => {
-                const index = parseInt(e.target.dataset.index);
-                let value = e.target.value.trim();
-                
-                if (value === "") return;
-
-                value = value.replace(",", ".");
-
-                let newQuantity = parseFloat(value);
-
-                if (isNaN(newQuantity) || newQuantity < 0) {
-                    newQuantity = 1;
-                    e.target.value = newQuantity;
-                } else {
-                    invoiceItems[index].quantity = newQuantity.toString();
-                }
-
-                invoiceItems[index].total = newQuantity * invoiceItems[index].price;
-                renderInvoice();
-            });
-
-            input.addEventListener("blur", (e) => {
-                const index = parseInt(e.target.dataset.index);
-                let value = e.target.value.trim().replace(",", ".");
-                let newQuantity = parseFloat(value);
-                
-                if (isNaN(newQuantity) || newQuantity < 0) {
-                    newQuantity = 1;
-                    e.target.value = newQuantity;
-                    invoiceItems[index].quantity = newQuantity.toString();
-                } else {
-                    e.target.value = newQuantity.toString().replace(".", ",");
-                    invoiceItems[index].quantity = newQuantity.toString();
-                }
-
-                invoiceItems[index].total = newQuantity * invoiceItems[index].price;
-                renderInvoice();
-            });
-        });
-
-        document.querySelectorAll(".remove-invoice-item").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const index = parseInt(e.target.dataset.index);
-                invoiceItems.splice(index, 1);
-                renderInvoice();
             });
         });
     }
 
     // Xác nhận hóa đơn
     confirmInvoiceBtn.addEventListener("click", () => {
-        const customer = displayCustomer.textContent.replace("Khách hàng: ", "").trim();
+        const customer = displayCustomer.textContent.trim();
         if (!customer || customer === "Chưa chọn") {
             alert("Vui lòng chọn khách hàng!");
             return;
@@ -375,20 +351,49 @@ document.addEventListener("DOMContentLoaded", function () {
         invoiceWindow.document.write(`
             <html><head><title>Hóa Đơn</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; } 
-                h2 { color: #333; } 
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; } 
-                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; } 
-                th { background-color: #f4f4f4; } 
-                .total-row { font-weight: bold; background-color: #f4f4f4; } 
-                th:nth-child(2), td:nth-child(2) { width: 80px; text-align: center; }
-                th:nth-child(3), td:nth-child(3) { width: 50px; text-align: center; }
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 18px; }
+                .header-row strong { font-weight: bold; }
+                .header-row .customer { margin: 0 20px; text-align: center; flex-grow: 1; }
+                .contact-row { display: flex; justify-content: space-between; align-items: baseline; }
+                .contact-row p:last-child { text-align: right; }
+                p { margin: 5px 0; color: #333; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                th, td { border: 1px solid #000; padding: 5px; text-align: center; }
+                th { background-color: #ddd; font-weight: bold; }
+                .total-row { font-weight: bold; background-color: #ddd; }
                 @media print { .print-button { display: none; } }
             </style></head>
-            <body><div class="invoice-header"><h2>HÓA ĐƠN</h2><p>Ngày: ${formattedDate}</p></div>
-            <h3>Khách hàng: ${customer}</h3><table><thead><tr><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead><tbody>
-            ${invoiceItems.map(item => `<tr><td>${item.name}</td><td>${parseFloat(item.quantity).toString().replace(".", ",")}</td><td>${item.unit}</td><td>${formatPrice(item.price.toString())}</td><td>${formatPrice((parseFloat(item.quantity) * item.price).toFixed(0))}</td></tr>`).join("")}
-            <tr class="total-row"><td colspan="4">Tổng cộng</td><td>${formatPrice(invoiceData.total.toFixed(0))}</td></tr></tbody></table><div class="print-button" style="display:none;"><button onclick="window.print()" style="display:none;">In hóa đơn</button></div></body></html>`);
+            <body>
+                <div class="header-row">
+                    <strong>TUYẾT TRINH</strong>
+                    <div class="customer"><strong>Khách hàng: ${customer}</strong></div>
+                    <strong>HÓA ĐƠN</strong>
+                </div>
+                <div class="contact-row">
+                    <p>SĐT/ZALO: 0365041480 - 0846901302</p>
+                    <p><strong>Ngày:</strong> ${formattedDate}</p>
+                </div>
+                <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
+                <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
+                <table>
+                    <thead><tr><th>STT</th><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead>
+                    <tbody>
+                    ${invoiceItems.map((item, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.name}</td>
+                            <td>${item.quantity.toString().replace('.', ',')}</td>
+                            <td>${item.unit}</td>
+                            <td>${formatPrice(item.price.toString())}</td>
+                            <td>${formatPrice((item.quantity * item.price).toFixed(0))}</td>
+                        </tr>
+                    `).join("")}
+                    <tr class="total-row"><td colspan="5">Tổng cộng</td><td>${formatPrice(invoiceData.total.toFixed(0))}</td></tr>
+                    </tbody>
+                </table>
+                <div class="print-button" style="display:none;"><button onclick="window.print()" style="display:none;">In hóa đơn</button></div>
+            </body></html>`);
         invoiceWindow.document.close();
 
         invoiceItems = [];
@@ -400,12 +405,21 @@ document.addEventListener("DOMContentLoaded", function () {
         historyContent.innerHTML = invoiceHistory.length === 0 ? "<p>Không có hóa đơn nào trong lịch sử.</p>" : invoiceHistory.map((invoice, index) => {
             const invoiceContent = `
                 <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-                    <h3>Hóa đơn #${index + 1}</h3>
-                    <p>Khách hàng: ${invoice.customerName}</p>
-                    <p>Ngày: ${invoice.date}</p>
+                    <div class="header-row">
+                        <strong>TUYẾT TRINH</strong>
+                        <div class="customer"><strong>Khách hàng: ${invoice.customerName}</strong></div>
+                        <strong>HÓA ĐƠN</strong>
+                    </div>
+                    <div class="contact-row">
+                        <p>SĐT/ZALO: 0365041480 - 0846901302</p>
+                        <p><strong>Ngày:</strong> ${invoice.date}</p>
+                    </div>
+                    <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
+                    <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
                     <table>
                         <thead>
                             <tr>
+                                <th>STT</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Số lượng</th>
                                 <th>ĐVT</th>
@@ -414,17 +428,18 @@ document.addEventListener("DOMContentLoaded", function () {
                             </tr>
                         </thead>
                         <tbody>
-                            ${invoice.items.map(item => `
+                            ${invoice.items.map((item, itemIndex) => `
                                 <tr>
+                                    <td>${itemIndex + 1}</td>
                                     <td>${item.name}</td>
-                                    <td>${item.quantity.toString().replace(".", ",")}</td>
+                                    <td>${item.quantity.toString().replace('.', ',')}</td>
                                     <td>${item.unit}</td>
                                     <td>${formatPrice(item.price.toString())} VNĐ</td>
                                     <td>${formatPrice(item.total.toFixed(0))} VNĐ</td>
                                 </tr>
                             `).join("")}
-                            <tr style="font-weight: bold; background-color: #f4f4f4;">
-                                <td colspan="4">Tổng cộng</td>
+                            <tr style="font-weight: bold; background-color: #ddd;">
+                                <td colspan="5">Tổng cộng</td>
                                 <td>${formatPrice(invoice.total.toFixed(0))} VNĐ</td>
                             </tr>
                         </tbody>
@@ -432,7 +447,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     <button class="print-invoice" data-index="${index}" style="background-color: #007bff; color: white; margin-right: 10px; padding: 5px 10px; cursor: pointer;">In</button>
                     <button class="delete-invoice" data-index="${index}" style="background-color: #ff4444; color: white; margin-top: 10px; padding: 5px 10px; cursor: pointer;">Xóa</button>
                 </div>`;
-
             return invoiceContent;
         }).join("");
 
@@ -444,28 +458,48 @@ document.addEventListener("DOMContentLoaded", function () {
                 printWindow.document.write(`
                     <html><head><title>Hóa Đơn #${index + 1}</title>
                     <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; } 
-                        h2 { color: #333; } 
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; } 
-                        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; } 
-                        th { background-color: #f4f4f4; } 
-                        .total-row { font-weight: bold; background-color: #f4f4f4; } 
-                        th:nth-child(2), td:nth-child(2) { width: 80px; text-align: center; }
-                        th:nth-child(3), td:nth-child(3) { width: 50px; text-align: center; }
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 18px; }
+                        .header-row strong { font-weight: bold; }
+                        .header-row .customer { margin: 0 20px; text-align: center; flex-grow: 1; }
+                        .contact-row { display: flex; justify-content: space-between; align-items: baseline; }
+                        .contact-row p:last-child { text-align: right; }
+                        p { margin: 5px 0; color: #333; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                        th, td { border: 1px solid #000; padding: 5px; text-align: center; }
+                        th { background-color: #ddd; font-weight: bold; }
+                        .total-row { font-weight: bold; background-color: #ddd; }
                         @media print { .print-button { display: none; } }
                     </style></head>
-                    <body><div class="invoice-header"><h2>HÓA ĐƠN #${index + 1}</h2><p>Ngày: ${invoice.date}</p></div>
-                    <h3>Khách hàng: ${invoice.customerName}</h3><table><thead><tr><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead><tbody>
-                    ${invoice.items.map(item => `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td>${item.quantity.toString().replace(".", ",")}</td>
-                            <td>${item.unit}</td>
-                            <td>${formatPrice(item.price.toString())}</td>
-                            <td>${formatPrice(item.total.toFixed(0))}</td>
-                        </tr>
-                    `).join("")}
-                    <tr class="total-row"><td colspan="4">Tổng cộng</td><td>${formatPrice(invoice.total.toFixed(0))}</td></tr></tbody></table></body></html>`);
+                    <body>
+                        <div class="header-row">
+                            <strong>TUYẾT TRINH</strong>
+                            <div class="customer"><strong>Khách hàng: ${invoice.customerName}</strong></div>
+                            <strong>HÓA ĐƠN</strong>
+                        </div>
+                        <div class="contact-row">
+                            <p>SĐT/ZALO: 0365041480 - 0846901302</p>
+                            <p><strong>Ngày:</strong> ${invoice.date}</p>
+                        </div>
+                        <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
+                        <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
+                        <table>
+                            <thead><tr><th>STT</th><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead>
+                            <tbody>
+                            ${invoice.items.map((item, itemIndex) => `
+                                <tr>
+                                    <td>${itemIndex + 1}</td>
+                                    <td>${item.name}</td>
+                                    <td>${item.quantity.toString().replace('.', ',')}</td>
+                                    <td>${item.unit}</td>
+                                    <td>${formatPrice(item.price.toString())}</td>
+                                    <td>${formatPrice(item.total.toFixed(0))}</td>
+                                </tr>
+                            `).join("")}
+                            <tr class="total-row"><td colspan="5">Tổng cộng</td><td>${formatPrice(invoice.total.toFixed(0))}</td></tr>
+                            </tbody>
+                        </table>
+                    </body></html>`);
                 printWindow.document.close();
                 printWindow.print();
             });
@@ -497,7 +531,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function capitalizeFirstLetterOnly(str) {
     if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 function capitalizeWords(str) {
