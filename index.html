@@ -46,31 +46,21 @@
 
     <button id="generateInvoice">Tạo hóa đơn</button>
 
-    <div id="invoiceHeader">
-        <h3>HÓA ĐƠN</h3>
-        <p>Ngày: <span id="invoiceDate"></span></p>
-        <p>Khách hàng: <span id="displayCustomer">Chưa chọn</span></p>
-
-    </div>
+    <h2>Hóa đơn</h2>
+    <p id="displayCustomer">Khách hàng: Chưa chọn</p>
     <table>
         <thead>
             <tr>
-                <th>STT</th>
                 <th>Tên sản phẩm</th>
                 <th>Số lượng</th>
                 <th>ĐVT</th>
                 <th>Giá</th>
-                <th>Thành tiền</th>
+                <th>Hành động</th>
             </tr>
         </thead>
         <tbody id="invoiceList"></tbody>
-        <tfoot>
-            <tr>
-                <td colspan="5">Tổng cộng</td>
-                <td id="totalAmount"></td>
-            </tr>
-        </tfoot>
     </table>
+    <p id="totalAmount"></p>
     <button id="confirmInvoice">Xác nhận hóa đơn</button>
 
     <div id="historyModal" class="modal">
