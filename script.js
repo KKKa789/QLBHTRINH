@@ -442,7 +442,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <strong>HÓA ĐƠN</strong>
                     </div>
                     <div class="contact-row">
-                        <p>SĐT/ZALO: 0365041480 - 0846901302</p>
+                  
                         <p><strong>Ngày:</strong> ${formattedDate}</p>
                     </div>
                     <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
@@ -485,8 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <strong>HÓA ĐƠN</strong>
                         </div>
                         <div class="contact-row">
-                            <p>SĐT/ZALO: 0365041480 - 0846901302</p>
-                            <p><strong>Ngày:</strong> ${invoice.date}</p>
+                      <p><strong>Ngày:</strong> ${invoice.date}</p>
                         </div>
                         <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
                         <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
@@ -556,8 +555,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <strong>HÓA ĐƠN</strong>
                             </div>
                             <div class="contact-row">
-                                <p>SĐT/ZALO: 0365041480 - 0846901302</p>
-                                <p><strong>Ngày:</strong> ${invoice.date}</p>
+                             
+                             <p><strong>Ngày:</strong> ${invoice.date}</p>
                             </div>
                             <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
                             <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
