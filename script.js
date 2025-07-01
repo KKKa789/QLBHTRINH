@@ -437,7 +437,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </style></head>
                 <body>
                     <div class="header-row">
-                        <strong>TUYẾT TRINH</strong>
+                        <strong></strong>
                         <div class="customer"><strong>Khách hàng: ${customer}</strong></div>
                         <strong>HÓA ĐƠN</strong>
                     </div>
@@ -445,8 +445,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   
                         <p><strong>Ngày:</strong> ${formattedDate}</p>
                     </div>
-                    <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
-                    <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
+               
                     <table>
                         <thead><tr><th>STT</th><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead>
                         <tbody>
@@ -480,15 +479,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const invoiceContent = `
                     <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
                         <div class="header-row">
-                            <strong>TUYẾT TRINH</strong>
+                            <strong></strong>
                             <div class="customer"><strong>Khách hàng: ${invoice.customerName}</strong></div>
                             <strong>HÓA ĐƠN</strong>
                         </div>
                         <div class="contact-row">
                       <p><strong>Ngày:</strong> ${invoice.date}</p>
                         </div>
-                        <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
-                        <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
+                   
                         <table>
                             <thead>
                                 <tr>
@@ -550,7 +548,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         </style></head>
                         <body>
                             <div class="header-row">
-                                <strong>TUYẾT TRINH</strong>
+                                <strong></strong>
                                 <div class="customer"><strong>Khách hàng: ${invoice.customerName}</strong></div>
                                 <strong>HÓA ĐƠN</strong>
                             </div>
@@ -558,8 +556,7 @@ document.addEventListener("DOMContentLoaded", function () {
                              
                              <p><strong>Ngày:</strong> ${invoice.date}</p>
                             </div>
-                            <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
-                            <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
+         
                             <table>
                                 <thead><tr><th>STT</th><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead>
                                 <tbody>
