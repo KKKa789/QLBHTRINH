@@ -419,51 +419,52 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Không thể mở cửa sổ in hóa đơn. Vui lòng kiểm tra cài đặt chặn popup của trình duyệt.");
                 return;
             }
-            invoiceWindow.document.write(`
-                <html><head><title>Hóa Đơn</title>
-                <style>
-                    body { font-family: Arial, sans-serif; margin: 20px; }
-                    .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 18px; }
-                    .header-row strong { font-weight: bold; }
-                    .header-row .customer { margin: 0 20px; text-align: center; flex-grow: 1; }
-                    .contact-row { display: flex; justify-content: space-between; align-items: baseline; }
-                    .contact-row p:last-child { text-align: right; }
-                    p { margin: 5px 0; color: #333; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-                    th, td { border: 1px solid #000; padding: 5px; text-align: left; }
-                    th { background-color: #ddd; font-weight: bold; }
-                    .total-row { font-weight: bold; background-color: #ddd; }
-                    @media print { .print-button { display: none; } }
-                </style></head>
-                <body>
-                    <div class="header-row">
-                        <strong></strong>
-                        <div class="customer"><strong>Khách hàng: ${customer}</strong></div>
-                        <strong>HÓA ĐƠN</strong>
-                    </div>
-                    <div class="contact-row">
-                  
-                        <p><strong>Ngày:</strong> ${formattedDate}</p>
-                    </div>
-               
-                    <table>
-                        <thead><tr><th>STT</th><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead>
-                        <tbody>
-                        ${invoiceItems.map((item, index) => `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.name}</td>
-                                <td>${item.quantity.toString().replace('.', ',')}</td>
-                                <td>${item.unit}</td>
-                                <td>${formatPrice(item.price.toString())}</td>
-                                <td>${formatPrice((item.quantity * item.price).toFixed(0))}</td>
-                            </tr>
-                        `).join("")}
-                        <tr class="total-row"><td colspan="5">Tổng cộng</td><td>${formatPrice(invoiceData.total.toFixed(0))}</td></tr>
-                        </tbody>
-                    </table>
-                    <div class="print-button" style="display:none;"><button onclick="window.print()" style="display:none;">In hóa đơn</button></div>
-                </body></html>`);
+invoiceWindow.document.write(`
+    <html><head><title>Hóa Đơn</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 18px; }
+        .header-row strong { font-weight: bold; }
+        .header-row .customer { margin: 0 20px; text-align: center; flex-grow: 1; }
+        .contact-row { display: flex; justify-content: space-between; align-items: baseline; }
+        .contact-row p:last-child { text-align: right; }
+        p { margin: 5px 0; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { border: 1px solid #000; padding: 5px; }
+        th { background-color: #ddd; font-weight: bold; text-align: center; } /* Căn giữa tiêu đề */
+        td { text-align: left; } /* Căn trái nội dung ô */
+        th:nth-child(2), td:nth-child(2) { text-align: left; } /* Đảm bảo cột Tên sản phẩm căn trái */
+        th:nth-child(2) { text-align: center; } /* Ghi đè căn giữa cho tiêu đề Tên sản phẩm */
+        .total-row { font-weight: bold; background-color: #ddd; }
+        @media print { .print-button { display: none; } }
+    </style></head>
+    <body>
+        <div class="header-row">
+            <strong></strong>
+            <div class="customer"><strong>Khách hàng: ${customer}</strong></div>
+            <strong>HÓA ĐƠN</strong>
+        </div>
+        <div class="contact-row">
+            <p><strong>Ngày:</strong> ${formattedDate}</p>
+        </div>
+        <table>
+            <thead><tr><th>STT</th><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead>
+            <tbody>
+            ${invoiceItems.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>${item.quantity.toString().replace('.', ',')}</td>
+                    <td>${item.unit}</td>
+                    <td>${formatPrice(item.price.toString())}</td>
+                    <td>${formatPrice((item.quantity * item.price).toFixed(0))}</td>
+                </tr>
+            `).join("")}
+            <tr class="total-row"><td colspan="5">Tổng cộng</td><td>${formatPrice(invoiceData.total.toFixed(0))}</td></tr>
+            </tbody>
+        </table>
+        <div class="print-button" style="display:none;"><button onclick="window.print()" style="display:none;">In hóa đơn</button></div>
+    </body></html>`);
             invoiceWindow.document.close();
 
             invoiceItems = [];
