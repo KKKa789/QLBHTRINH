@@ -1,276 +1,3 @@
-HTML 
-
-
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Bán Hàng</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <h1>Quản Lý Bán Hàng <button id="viewHistory">Xem lịch sử hóa đơn</button></h1>
-
-    <div class="input-section">
-        <input type="text" id="newCustomerName" placeholder="Nhập tên khách hàng mới">
-        <button id="addCustomer">Thêm khách hàng</button>
-    </div>
-
-    <div class="input-section">
-        <input type="text" id="productName" placeholder="Tên sản phẩm">
-        <input type="text" id="unit" placeholder="ĐVT">
-        <input type="text" id="price" placeholder="Giá">
-        <button id="addProduct">Thêm sản phẩm</button>
-    </div>
-
-    <h2>Danh sách sản phẩm</h2>
-    <div class="input-section">
-        <select id="customerSelect">
-            <option value="">Chọn...</option>
-        </select>
-        <input type="text" id="searchProduct" placeholder="Tìm kiếm sản phẩm...">
-        <button id="deleteCustomer" style="background-color: #ff4444;">Xóa khách hàng</button>
-    </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Chọn</th>
-                <th>Tên sản phẩm</th>
-                <th>Số lượng</th>
-                <th>ĐVT</th>
-                <th>Giá</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody id="productList"></tbody>
-    </table>
-
-    <button id="generateInvoice">Tạo hóa đơn</button>
-
-    <div id="invoiceHeader">
-        <h3>HÓA ĐƠN</h3>
-        <p>Ngày: <span id="invoiceDate"></span></p>
-        <p>Khách hàng: <span id="displayCustomer">Chưa chọn</span></p>
-
-    </div>
-    <table>
-        <thead>
-            <tr>
-                <th>STT</th>
-                <th>Tên sản phẩm</th>
-                <th>Số lượng</th>
-                <th>ĐVT</th>
-                <th>Giá</th>
-                <th>Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody id="invoiceList"></tbody>
-        <tfoot>
-            <tr>
-                <td colspan="5">Tổng cộng</td>
-                <td id="totalAmount"></td>
-            </tr>
-        </tfoot>
-    </table>
-    <button id="confirmInvoice">Xác nhận hóa đơn</button>
-
-    <div id="historyModal" class="modal">
-        <div class="modal-content">
-            <h2>Lịch sử hóa đơn</h2>
-            <div id="historyContent"></div>
-            <button id="closeHistory">Đóng</button>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
-
-
-
-CSS
-
-
-
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-}
-
-h1 {
-    color: #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-h2 {
-    color: #333;
-    margin-top: 20px;
-}
-
-.input-section {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-input, select, button {
-    padding: 8px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-input {
-    width: 200px;
-}
-
-select {
-    width: 200px;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 12px;
-    padding-right: 25px;
-}
-
-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 8px 16px;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-#viewHistory {
-    background-color: #ff0000;
-    padding: 8px 16px;
-}
-
-#viewHistory:hover {
-    background-color: #cc0000;
-}
-
-#confirmInvoice {
-    background-color: #ff0000;
-    padding: 8px 16px;
-}
-
-#confirmInvoice:hover {
-    background-color: #cc0000;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-}
-
-th {
-    background-color: #f4f4f4;
-}
-
-td:first-child {
-    text-align: center;
-}
-
-td:first-child + td {
-    text-align: left;
-}
-
-#invoiceHeader {
-    margin-bottom: 20px;
-}
-
-#invoiceHeader h3 {
-    font-size: 1.5em;
-    color: #333;
-    margin: 0 0 10px 0;
-}
-
-#invoiceHeader p {
-    margin: 5px 0;
-    color: #333;
-}
-
-#totalAmount {
-    margin-top: 10px;
-    font-size: 1.2em;
-    color: #ff0000;
-    font-weight: bold;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: white;
-    margin: 5% auto;
-    padding: 20px;
-    width: 80%;
-    max-height: 80%;
-    overflow-y: auto;
-    border-radius: 4px;
-}
-
-#closeHistory {
-    background-color: #ff0000;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    cursor: pointer;
-}
-
-#closeHistory:hover {
-    background-color: #cc0000;
-}
-
-#deleteCustomer:hover {
-    background-color: #cc0000;
-}
-
-.delete-invoice-btn {
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.delete-invoice-btn:hover {
-    background-color: #cc0000;
-}
-
-
-
-
-JS
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     // DOM element references
     const newCustomerNameInput = document.getElementById("newCustomerName");
@@ -710,7 +437,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </style></head>
                 <body>
                     <div class="header-row">
-                        <strong>TUYẾT TRINH</strong>
+                        <strong></strong>
                         <div class="customer"><strong>Khách hàng: ${customer}</strong></div>
                         <strong>HÓA ĐƠN</strong>
                     </div>
@@ -718,8 +445,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   
                         <p><strong>Ngày:</strong> ${formattedDate}</p>
                     </div>
-                    <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
-                    <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
+               
                     <table>
                         <thead><tr><th>STT</th><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead>
                         <tbody>
@@ -753,15 +479,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const invoiceContent = `
                     <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
                         <div class="header-row">
-                            <strong>TUYẾT TRINH</strong>
+                            <strong></strong>
                             <div class="customer"><strong>Khách hàng: ${invoice.customerName}</strong></div>
                             <strong>HÓA ĐƠN</strong>
                         </div>
                         <div class="contact-row">
                       <p><strong>Ngày:</strong> ${invoice.date}</p>
                         </div>
-                        <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
-                        <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
+                   
                         <table>
                             <thead>
                                 <tr>
@@ -823,7 +548,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         </style></head>
                         <body>
                             <div class="header-row">
-                                <strong>TUYẾT TRINH</strong>
+                                <strong></strong>
                                 <div class="customer"><strong>Khách hàng: ${invoice.customerName}</strong></div>
                                 <strong>HÓA ĐƠN</strong>
                             </div>
@@ -831,8 +556,7 @@ document.addEventListener("DOMContentLoaded", function () {
                              
                              <p><strong>Ngày:</strong> ${invoice.date}</p>
                             </div>
-                            <p>Sỉ lẻ: thiết bị điện, đồ nước, đồ sắt, nước sơn</p>
-                            <p>Hàng chành: TP.HCM <-> P2 Tân An <-> Chợ Phú Mỹ(TG)</p>
+         
                             <table>
                                 <thead><tr><th>STT</th><th>Tên sản phẩm</th><th>Số lượng</th><th>ĐVT</th><th>Giá</th><th>Thành tiền</th></tr></thead>
                                 <tbody>
