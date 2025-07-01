@@ -430,7 +430,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     .contact-row p:last-child { text-align: right; }
                     p { margin: 5px 0; color: #333; }
                     table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-                    th, td { border: 1px solid #000; padding: 5px; text-align: center; }
+                    th, td { border: 1px solid #000; padding: 5px; text-align: left; }
                     th { background-color: #ddd; font-weight: bold; }
                     .total-row { font-weight: bold; background-color: #ddd; }
                     @media print { .print-button { display: none; } }
