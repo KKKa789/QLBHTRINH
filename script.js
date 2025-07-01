@@ -423,14 +423,14 @@ invoiceWindow.document.write(`
     <html><head><title>Hóa Đơn</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 22px; }
+        .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; font-size: 22px; }
         .header-row strong { font-weight: bold; }
         .header-row .customer { margin: 0 20px; text-align: center; flex-grow: 1; }
         .contact-row { display: flex; justify-content: space-between; align-items: baseline; }
         .contact-row p:last-child { text-align: right; }
         p { margin: 5px 0; color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 17px; }
-        th, td { border: 1px solid #000; padding: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 20px; }
+        th, td { border: 1px solid #000; padding: 8px; }
         th { background-color: #ddd; font-weight: bold; text-align: center; } /* Căn giữa tiêu đề */
         td { text-align: left; } /* Căn trái nội dung ô */
         th:nth-child(2), td:nth-child(2) { text-align: left; } /* Đảm bảo cột Tên sản phẩm căn trái */
