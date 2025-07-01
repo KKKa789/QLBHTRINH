@@ -423,13 +423,13 @@ invoiceWindow.document.write(`
     <html><head><title>Hóa Đơn</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 22px; }
+        .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 18px; }
         .header-row strong { font-weight: bold; }
         .header-row .customer { margin: 0 20px; text-align: center; flex-grow: 1; }
         .contact-row { display: flex; justify-content: space-between; align-items: baseline; }
         .contact-row p:last-child { text-align: right; }
         p { margin: 5px 0; color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 17px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
         th, td { border: 1px solid #000; padding: 5px; }
         th { background-color: #ddd; font-weight: bold; text-align: center; } /* Căn giữa tiêu đề */
         td { text-align: left; } /* Căn trái nội dung ô */
@@ -535,13 +535,13 @@ invoiceWindow.document.write(`
                         <html><head><title>Hóa Đơn #${index + 1}</title>
                         <style>
                             body { font-family: Arial, sans-serif; margin: 20px; }
-                            .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 18px; }
+                            .header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; font-size: 22px; }
                             .header-row strong { font-weight: bold; }
                             .header-row .customer { margin: 0 20px; text-align: center; flex-grow: 1; }
                             .contact-row { display: flex; justify-content: space-between; align-items: baseline; }
                             .contact-row p:last-child { text-align: right; }
                             p { margin: 5px 0; color: #333; }
-                            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 17px; }
                             th, td { border: 1px solid #000; padding: 5px; text-align: center; }
                             th { background-color: #ddd; font-weight: bold; }
                             .total-row { font-weight: bold; background-color: #ddd; }
